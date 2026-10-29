@@ -7,63 +7,33 @@
 <meta name="theme-color" content="#f6f4ef">
 <title>Who's on duty? - TAA Deans</title>
 <style>
-:root{--bg:#f6f4ef;--ink:#1d1d1b;--muted:#77756f;--accent:#1f4fbf;--line:#ddd9cf;--card:#fff;
---boys:#1f4fbf;--girls:#a8325e;--warn:#9a5b00;--warnbg:#fff4de;--ok:#1d7a46}
+:root{--bg:#f6f4ef;--ink:#1d1d1b;--muted:#77756f;--accent:#1f4fbf;--line:#ddd9cf;--card:#fff;--boys:#1f4fbf;--girls:#a8325e;--warn:#9a5b00;--warnbg:#fff4de}
 *{box-sizing:border-box}
 html{-webkit-text-size-adjust:100%}
-body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.4 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;padding-bottom:calc(92px + env(safe-area-inset-bottom))}
-main{max-width:640px;margin:0 auto;padding:20px 16px}
-header h1{font-size:1.6rem;margin:0 0 2px;letter-spacing:-.01em}
-header .sub{color:var(--muted);font-size:.9rem}
-.card{background:var(--card);border:1px solid var(--line);border-radius:16px;margin-top:16px;overflow:hidden}
-.card .bar{height:5px;background:var(--c)}
+html,body{height:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.3 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif}
+main{height:100vh;height:100dvh;max-width:560px;margin:0 auto;padding:max(12px,env(safe-area-inset-top)) 14px max(12px,env(safe-area-inset-bottom));display:flex;flex-direction:column;gap:10px}
+h1{font-size:1.35rem;margin:0;letter-spacing:-.01em;flex:none}
+#cards{flex:1;min-height:0;display:flex;flex-direction:column;gap:10px}
+.card{flex:1;min-height:0;background:var(--card);border:1px solid var(--line);border-top:4px solid var(--c);border-radius:14px;padding:10px 14px;display:flex;flex-direction:column;justify-content:space-between;gap:6px}
 .card.boys{--c:var(--boys)}.card.girls{--c:var(--girls)}
-.card .in{padding:16px}
-.dorm{display:flex;justify-content:space-between;align-items:baseline;gap:8px}
-.dorm h2{font-size:.78rem;text-transform:uppercase;letter-spacing:.08em;color:var(--c);margin:0}
-.dorm .day{font-size:.82rem;color:var(--muted)}
-.now{display:flex;flex-wrap:wrap;gap:16px;margin:14px 0 4px}
-.person{display:flex;align-items:center;gap:14px;min-width:0}
-.av{border-radius:50%;object-fit:cover;background:#e7e3d8;flex:none;display:inline-flex;align-items:center;justify-content:center;color:#5a574f;font-weight:600;overflow:hidden}
-.av.l{width:76px;height:76px;font-size:1.5rem;border:3px solid var(--c)}
-.av.s{width:30px;height:30px;font-size:.72rem}
-.pname{font-size:1.3rem;font-weight:650;line-height:1.15}
-.prole{color:var(--muted);font-size:.85rem;margin-top:2px}
-.none{padding:10px 0 2px;font-size:1.1rem;font-weight:600}
-.none.gap{color:var(--muted);font-weight:500;font-size:1rem}
-.tag{display:inline-block;font-size:.72rem;font-weight:600;padding:2px 8px;border-radius:99px;margin-top:8px}
-.tag.ov{background:var(--warnbg);color:var(--warn)}
-.tag.note{background:#eef0f7;color:#3b4570}
-.tag.nx{background:#f0eee7;color:var(--muted)}
-.call{display:flex;align-items:center;justify-content:space-between;margin-top:14px;padding:12px 14px;border:1px solid var(--line);border-radius:12px;text-decoration:none;color:var(--ink);background:#faf9f5}
-.call span{font-size:.8rem;color:var(--muted)}
-.call b{font-size:1.05rem;color:var(--c)}
-details{margin-top:12px}
-summary{cursor:pointer;color:var(--muted);font-size:.88rem;padding:6px 0;list-style:none}
-summary::-webkit-details-marker{display:none}
-summary:after{content:" +"}details[open] summary:after{content:" -"}
-.list{border-top:1px solid var(--line)}
-.row{display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid var(--line);font-size:.95rem}
-.row:last-child{border-bottom:0}
-.row .d{width:84px;flex:none;color:var(--muted);font-size:.85rem}
-.row .d.today{color:var(--ink);font-weight:650}
-.row .w{flex:1;min-width:0}
-.row .w small{display:block;color:var(--muted);font-size:.78rem}
-.row .faces{display:flex;flex:none}
-.row .faces .av+.av{margin-left:-8px;border:2px solid #fff}
-.mut{color:var(--muted)}
-.foot{margin:22px 4px 0;color:var(--muted);font-size:.8rem}
-.foot p{margin:6px 0}
-.bar-fixed{position:fixed;left:0;right:0;bottom:0;background:linear-gradient(to top,var(--bg) 70%,rgba(246,244,239,0));padding:14px 16px calc(14px + env(safe-area-inset-bottom));z-index:5}
-.bar-fixed .btn{max-width:608px;margin:0 auto}
-.btn{display:block;width:100%;border:0;border-radius:14px;background:var(--accent);color:#fff;font:600 1rem/1 inherit;font-family:inherit;padding:16px;cursor:pointer}
+.card h2{font-size:.72rem;text-transform:uppercase;letter-spacing:.08em;color:var(--c);margin:0}
+.now{flex:1;min-height:0;display:flex;flex-direction:column;justify-content:center;gap:8px}
+.person{display:flex;align-items:center;gap:12px;min-width:0}
+.av{border-radius:50%;object-fit:cover;background:#e7e3d8;flex:none;display:inline-flex;align-items:center;justify-content:center;color:#5a574f;font-weight:600;overflow:hidden;width:56px;height:56px;font-size:1.1rem;border:3px solid var(--c);padding:0}
+.card.two .av{width:46px;height:46px;font-size:.95rem}
+.pname{font-size:1.15rem;font-weight:650;line-height:1.15}
+.none{font-size:1rem;font-weight:600;color:var(--muted)}
+.nnote{font-size:.8rem;color:var(--muted);font-weight:400}
+.call{display:flex;align-items:center;justify-content:space-between;flex:none;padding:9px 12px;border:1px solid var(--line);border-radius:10px;text-decoration:none;background:#faf9f5;color:var(--c);font-weight:650;font-size:.95rem}
+.btn{flex:none;display:block;width:100%;border:0;border-radius:12px;background:var(--accent);color:#fff;font:600 .9rem/1 inherit;font-family:inherit;padding:13px;cursor:pointer}
 .btn.sec{background:#fff;color:var(--ink);border:1px solid var(--line)}
 .btn:disabled{opacity:.55}
 .link{background:none;border:0;color:var(--accent);font:inherit;font-size:.9rem;padding:8px 0;cursor:pointer}
 .link.red{color:#b3261e}
 .ov-wrap{position:fixed;inset:0;background:rgba(20,20,18,.45);display:none;align-items:flex-end;justify-content:center;z-index:10}
 .ov-wrap.on{display:flex}
-.sheet{background:var(--bg);width:100%;max-width:640px;max-height:92vh;overflow:auto;border-radius:20px 20px 0 0;padding:18px 16px calc(20px + env(safe-area-inset-bottom))}
+.sheet{background:var(--bg);width:100%;max-width:560px;max-height:92vh;max-height:92dvh;overflow:auto;border-radius:20px 20px 0 0;padding:18px 16px calc(20px + env(safe-area-inset-bottom))}
 .sheet h3{margin:0 0 12px;font-size:1.2rem}
 .seg{display:grid;grid-template-columns:1fr 1fr;gap:6px;background:#e9e5da;padding:4px;border-radius:12px;margin-bottom:14px}
 .seg button{border:0;background:transparent;padding:10px;border-radius:9px;font:600 .92rem inherit;font-family:inherit;color:var(--muted)}
@@ -72,29 +42,20 @@ label.f{display:block;font-size:.8rem;color:var(--muted);margin:12px 0 5px}
 select,input[type=text],input[type=password],input[type=tel]{width:100%;font:inherit;font-size:16px;padding:12px;border:1px solid var(--line);border-radius:11px;background:#fff;color:var(--ink)}
 .chk{display:flex;align-items:center;gap:10px;background:#fff;border:1px solid var(--line);border-radius:11px;padding:8px 12px;margin-bottom:6px;font-size:.95rem}
 .chk input{width:20px;height:20px}
+.mut{color:var(--muted)}
 .msg{margin-top:12px;font-size:.9rem;padding:10px 12px;border-radius:10px;display:none}
 .msg.on{display:block}.msg.err{background:#fdecea;color:#8c1d18}.msg.ok{background:#e6f4ec;color:#14532d}.msg.info{background:#eef0f7;color:#3b4570}
 .help{font-size:.82rem;color:var(--muted);margin:10px 0 0}
 .flex{display:flex;gap:10px;margin-top:16px}
-.flex .btn{flex:1}
-.err-banner{background:var(--warnbg);color:var(--warn);border-radius:12px;padding:10px 12px;margin-top:14px;font-size:.88rem;display:none}
+.flex .btn{flex:1;font-size:1rem;padding:15px}
 </style>
 </head>
 <body>
 <main>
-  <header>
-    <h1>Who's on duty?</h1>
-    <div class="sub" id="sub">Loading...</div>
-  </header>
-  <div class="err-banner" id="banner"></div>
+  <h1>Who's on duty?</h1>
   <div id="cards"></div>
-  <div class="foot">
-    <p>Duty switches at 7:00 AM Phoenix time. Between midnight and 7:00 AM the previous day's dean is still on duty.</p>
-    <p id="srcline"></p>
-  </div>
+  <button class="btn" id="open">I'm on duty / Issue a correction</button>
 </main>
-
-<div class="bar-fixed"><button class="btn" id="open">I'm on duty / Issue a correction</button></div>
 
 <div class="ov-wrap" id="ov" role="dialog" aria-modal="true" aria-labelledby="sheetTitle">
  <div class="sheet">
@@ -127,7 +88,6 @@ select,input[type=text],input[type=password],input[type=tel]{width:100%;font:inh
 
   <div class="flex"><button class="btn sec" id="cancel" type="button">Cancel</button><button class="btn" id="save" type="button">Save</button></div>
   <div style="text-align:center"><button class="link red" id="reset" type="button" style="display:none">Clear change and go back to the schedule</button></div>
-  <p class="help">Changes show up for everyone within a few minutes. Anyone can see them; only deans with the PIN can make them.</p>
  </div>
 </div>
 
@@ -164,47 +124,28 @@ function avatar(id,cls){
   var d=S.deans[id];if(!d)return'';
   return '<span class="av '+cls+'" title="'+esc(d.name)+'"><img class="av '+cls+'" style="border:0;width:100%;height:100%" src="'+esc(d.photo)+'" alt="'+esc(d.name)+'" onerror="this.parentNode.textContent=\''+esc(initials(d.name))+'\'"></span>';
 }
-function avatarL(id){ // large avatar keeps ring color
+function avatarL(id){
   var d=S.deans[id];
-  return '<span class="av l" style="padding:0"><img src="'+esc(d.photo)+'" alt="'+esc(d.name)+'" style="width:100%;height:100%;object-fit:cover;border-radius:50%" onerror="this.parentNode.textContent=\''+esc(initials(d.name))+'\'"></span>';
+  return '<span class="av"><img src="'+esc(d.photo)+'" alt="" style="width:100%;height:100%;object-fit:cover;border-radius:50%" onerror="this.parentNode.textContent=\''+esc(initials(d.name))+'\'"></span>';
 }
 function names(r){return r.deans.map(function(i){return S.deans[i].first}).join(' & ')}
 function render(){
   if(!S)return;
-  var today=dutyDate(),h=new Date(nowMs()-7*3600000).getUTCHours(); // Phoenix wall-clock hour
-  var early=h<7;
-  $('sub').textContent=fmt(today,{weekday:'long',month:'long',day:'numeric'})+(early?' (duty day began yesterday at 7:00 AM)':'');
-  var html='';
+  var today=dutyDate(),html='';
   ['boys','girls'].forEach(function(dorm){
-    var D=S.dorms[dorm],r=resolve(dorm,today),nxt=resolve(dorm,addDays(today,1));
-    html+='<section class="card '+dorm+'"><div class="bar"></div><div class="in">';
-    html+='<div class="dorm"><h2>'+esc(D.label)+'</h2><span class="day">On duty today</span></div>';
+    var D=S.dorms[dorm],r=resolve(dorm,today);
+    html+='<section class="card '+dorm+(r.deans.length>1?' two':'')+'"><h2>'+esc(D.label)+'</h2><div class="now">';
     if(r.deans.length){
-      html+='<div class="now">'+r.deans.map(function(id){var d=S.deans[id];return '<div class="person">'+avatarL(id)+'<div><div class="pname">'+esc(d.name)+'</div><div class="prole">'+esc(d.dorm==='boys'?"Boys' dean":"Girls' dean")+(d.dorm!==dorm?' (covering)':'')+'</div></div></div>'}).join('')+'</div>';
+      html+=r.deans.map(function(id){return '<div class="person">'+avatarL(id)+'<div class="pname">'+esc(S.deans[id].name)+'</div></div>'}).join('');
+      if(r.note)html+='<div class="nnote">'+esc(r.note)+'</div>';
     }else if(r.src==='gap'){
-      html+='<div class="none gap">Not scheduled</div><div class="prole">'+esc(D.gap)+'</div>';
+      html+='<div class="none">Not scheduled</div>';
     }else{
-      html+='<div class="none">No duty today</div>';
+      html+='<div class="none">No duty<div class="nnote">'+esc(r.note)+'</div></div>';
     }
-    if(r.src==='override')html+='<span class="tag ov">Changed'+(r.by&&S.deans[r.by]?' by '+esc(S.deans[r.by].first):'')+(r.at?' at '+esc(fmtTime(r.at)):'')+'</span> ';
-    if(r.note)html+='<span class="tag note">'+esc(r.note)+'</span>';
-    if(nxt&&JSON.stringify(nxt.deans)!==JSON.stringify(r.deans))html+=' <span class="tag nx">Tomorrow: '+(nxt.deans.length?esc(names(nxt)):esc(nxt.note||'none'))+'</span>';
-    html+='<a class="call" href="tel:'+esc(D.phone.replace(/[^0-9+]/g,''))+'"><div><span>'+esc(D.label)+' dean phone</span><br><b>'+esc(D.phone)+'</b></div><b>Call</b></a>';
-    html+='<details><summary>Next 7 days</summary><div class="list">';
-    for(var i=0;i<7;i++){
-      var d=addDays(today,i),x=resolve(dorm,d);
-      html+='<div class="row"><div class="d'+(i===0?' today':'')+'">'+esc(i===0?'Today':fmt(d,{weekday:'short',month:'short',day:'numeric'}))+'</div><div class="w">'+
-        (x.deans.length?esc(names(x)):'<span class="mut">'+esc(x.src==='gap'?'Not scheduled':(x.note||'No duty'))+'</span>')+
-        (x.deans.length&&x.note?'<small>'+esc(x.note)+'</small>':'')+(x.src==='override'?'<small style="color:var(--warn)">Changed</small>':'')+
-        '</div><div class="faces">'+x.deans.map(function(id){return avatar(id,'s')}).join('')+'</div></div>';
-    }
-    html+='</div></details></div></section>';
+    html+='</div><a class="call" href="tel:'+esc(D.phone.replace(/[^0-9+]/g,''))+'"><span>Call</span><span>'+esc(D.phone)+'</span></a></section>';
   });
   $('cards').innerHTML=html;
-  var b=[];
-  if(liveOK===false)b.push('Live changes could not be loaded just now. Showing the saved schedule.');
-  $('banner').style.display=b.length?'block':'none';$('banner').textContent=b.join(' ');
-  $('srcline').textContent='Schedule: '+S.semester+', updated '+fmt(S.updated,{month:'short',day:'numeric',year:'numeric'})+'. Boys from the Dean on Duty roster; girls\' weekends from the Aug-Dec dean schedule.';
 }
 function fmtTime(iso){try{return new Date(iso).toLocaleTimeString('en-US',{timeZone:'America/Phoenix',hour:'numeric',minute:'2-digit'})}catch(e){return''}}
 
@@ -223,7 +164,7 @@ function loadLive(){
 function loadAll(){
   return Promise.all([getJSON('data/schedule.json'),getJSON('data/overrides.json').catch(function(){return{items:[]}}),getJSON('data/config.json').catch(function(){return null})]).then(function(a){
     S=a[0];FILE=a[1].items||[];CFG=a[2];return loadLive();
-  }).then(render).catch(function(e){$('sub').textContent='Could not load the schedule. Please try again.'});
+  }).then(render).catch(function(e){$('cards').textContent='Could not load the schedule. Please try again.'});
 }
 
 /* ---------- crypto: PIN unlocks the write key ---------- */
