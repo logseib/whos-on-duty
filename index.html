@@ -12,21 +12,29 @@
 html{-webkit-text-size-adjust:100%}
 html,body{height:100%}
 body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.3 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif}
-main{height:100vh;height:100dvh;max-width:560px;margin:0 auto;padding:max(12px,env(safe-area-inset-top)) 14px max(12px,env(safe-area-inset-bottom));display:flex;flex-direction:column;gap:10px}
-h1{font-size:1.35rem;margin:0;letter-spacing:-.01em;flex:none}
-#cards{flex:1;min-height:0;display:flex;flex-direction:column;gap:10px}
-.card{flex:1;min-height:0;background:var(--card);border:1px solid var(--line);border-top:4px solid var(--c);border-radius:14px;padding:10px 14px;display:flex;flex-direction:column;justify-content:space-between;gap:6px}
+main{height:100vh;height:100dvh;max-width:520px;margin:0 auto;padding:max(8px,env(safe-area-inset-top)) 12px max(8px,env(safe-area-inset-bottom));display:flex;flex-direction:column;gap:6px}
+h1{font-size:1.1rem;margin:0;letter-spacing:-.01em;flex:none}
+#cards{flex:1;min-height:0;display:flex;flex-direction:column;gap:6px}
+.card{flex:1;min-height:0;background:var(--card);border:1px solid var(--line);border-left:4px solid var(--c);border-radius:10px;padding:6px 10px;display:flex;flex-direction:column;gap:4px}
 .card.boys{--c:var(--boys)}.card.girls{--c:var(--girls)}
-.card h2{font-size:.72rem;text-transform:uppercase;letter-spacing:.08em;color:var(--c);margin:0}
-.now{flex:1;min-height:0;display:flex;flex-direction:column;justify-content:center;gap:8px}
-.person{display:flex;align-items:center;gap:12px;min-width:0}
-.av{border-radius:50%;object-fit:cover;background:#e7e3d8;flex:none;display:inline-flex;align-items:center;justify-content:center;color:#5a574f;font-weight:600;overflow:hidden;width:56px;height:56px;font-size:1.1rem;border:3px solid var(--c);padding:0}
-.card.two .av{width:46px;height:46px;font-size:.95rem}
-.pname{font-size:1.15rem;font-weight:650;line-height:1.15}
-.none{font-size:1rem;font-weight:600;color:var(--muted)}
-.nnote{font-size:.8rem;color:var(--muted);font-weight:400}
-.call{display:flex;align-items:center;justify-content:space-between;flex:none;padding:9px 12px;border:1px solid var(--line);border-radius:10px;text-decoration:none;background:#faf9f5;color:var(--c);font-weight:650;font-size:.95rem}
-.btn{flex:none;display:block;width:100%;border:0;border-radius:12px;background:var(--accent);color:#fff;font:600 .9rem/1 inherit;font-family:inherit;padding:13px;cursor:pointer}
+.hd{display:flex;justify-content:space-between;align-items:center;flex:none}
+.card h2{font-size:.66rem;text-transform:uppercase;letter-spacing:.08em;color:var(--c);margin:0}
+.call{color:var(--c);font-weight:650;font-size:.8rem;text-decoration:none;padding:2px 0}
+.now{flex:1;min-height:0;display:flex;flex-direction:column;justify-content:center;gap:4px}
+.person{display:flex;align-items:center;gap:10px;min-width:0}
+.av{border-radius:50%;object-fit:cover;background:#e7e3d8;flex:none;display:inline-flex;align-items:center;justify-content:center;color:#5a574f;font-weight:600;overflow:hidden;width:44px;height:44px;font-size:.9rem;border:2px solid var(--c);padding:0}
+.card.two .av{width:34px;height:34px;font-size:.75rem}
+.pname{font-size:1rem;font-weight:650;line-height:1.1}
+.none{font-size:.9rem;font-weight:600;color:var(--muted)}
+.nnote{font-size:.7rem;color:var(--muted);font-weight:400;line-height:1.1}
+.nx{flex:none;background:var(--card);border:1px solid var(--line);border-radius:10px;padding:4px 10px;font-size:.72rem}
+.nx table{width:100%;border-collapse:collapse;table-layout:fixed}
+.nx th{font-weight:650;font-size:.62rem;text-transform:uppercase;letter-spacing:.06em;text-align:left;padding:1px 0 2px}
+.nx th.b{color:var(--boys)}.nx th.g{color:var(--girls)}
+.nx td{padding:1.5px 0;border-top:1px solid #efece4;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;padding-right:6px}
+.nx td:first-child{color:var(--muted);width:22%}
+.nx td.m{color:var(--muted)}.nx td.ch{color:var(--warn)}
+.btn{flex:none;display:block;width:100%;border:0;border-radius:10px;background:var(--accent);color:#fff;font:600 .82rem/1 inherit;font-family:inherit;padding:11px;cursor:pointer}
 .btn.sec{background:#fff;color:var(--ink);border:1px solid var(--line)}
 .btn:disabled{opacity:.55}
 .link{background:none;border:0;color:var(--accent);font:inherit;font-size:.9rem;padding:8px 0;cursor:pointer}
@@ -54,6 +62,7 @@ select,input[type=text],input[type=password],input[type=tel]{width:100%;font:inh
 <main>
   <h1>Who's on duty?</h1>
   <div id="cards"></div>
+  <div class="nx" id="nx"></div>
   <button class="btn" id="open">I'm on duty / Issue a correction</button>
 </main>
 
@@ -78,11 +87,7 @@ select,input[type=text],input[type=password],input[type=tel]{width:100%;font:inh
   <label class="f" for="note">Note (optional)</label>
   <input type="text" id="note" maxlength="60" placeholder="e.g. Swapped with Jake">
 
-  <div id="pinWrap">
-    <label class="f" for="pin">PIN</label>
-    <input type="password" id="pin" inputmode="numeric" autocomplete="off" placeholder="Deans' PIN">
-  </div>
-  <div id="remWrap" class="help" style="display:none">This phone is unlocked. <button class="link" id="forget" type="button">Lock it</button></div>
+  <div id="pinWrap" style="display:none"></div>
 
   <div class="msg" id="msg"></div>
 
@@ -134,7 +139,7 @@ function render(){
   var today=dutyDate(),html='';
   ['boys','girls'].forEach(function(dorm){
     var D=S.dorms[dorm],r=resolve(dorm,today);
-    html+='<section class="card '+dorm+(r.deans.length>1?' two':'')+'"><h2>'+esc(D.label)+'</h2><div class="now">';
+    html+='<section class="card '+dorm+(r.deans.length>1?' two':'')+'"><div class="hd"><h2>'+esc(D.label)+'</h2><a class="call" href="tel:'+esc(D.phone.replace(/[^0-9+]/g,''))+'">Call '+esc(D.phone)+'</a></div><div class="now">';
     if(r.deans.length){
       html+=r.deans.map(function(id){return '<div class="person">'+avatarL(id)+'<div class="pname">'+esc(S.deans[id].name)+'</div></div>'}).join('');
       if(r.note)html+='<div class="nnote">'+esc(r.note)+'</div>';
@@ -143,9 +148,18 @@ function render(){
     }else{
       html+='<div class="none">No duty<div class="nnote">'+esc(r.note)+'</div></div>';
     }
-    html+='</div><a class="call" href="tel:'+esc(D.phone.replace(/[^0-9+]/g,''))+'"><span>Call</span><span>'+esc(D.phone)+'</span></a></section>';
+    html+='</div></section>';
   });
   $('cards').innerHTML=html;
+  var t='<table><tr><th>Next 7 days</th><th class="b">Boys</th><th class="g">Girls</th></tr>';
+  for(var i=1;i<=7;i++){
+    var d=addDays(today,i);
+    t+='<tr><td>'+esc(fmt(d,{weekday:'short',month:'numeric',day:'numeric'}))+'</td>'+['boys','girls'].map(function(dorm){
+      var x=resolve(dorm,d);
+      return '<td class="'+(x.deans.length?(x.src==='override'?'ch':''):'m')+'">'+(x.deans.length?esc(names(x)):esc(x.src==='gap'?'-':(x.note||'No duty')))+'</td>';
+    }).join('')+'</tr>';
+  }
+  $('nx').innerHTML=t+'</table>';
 }
 function fmtTime(iso){try{return new Date(iso).toLocaleTimeString('en-US',{timeZone:'America/Phoenix',hour:'numeric',minute:'2-digit'})}catch(e){return''}}
 
@@ -177,10 +191,22 @@ function unlock(pin){
     var t=new TextDecoder().decode(p);if(t.indexOf('WOD1:')!==0)throw new Error('bad');return t.slice(5);
   });
 }
+/* PIN is OFF for now: config.kvdb.wk holds the write key in the clear.
+   To re-enable: delete "wk" from data/config.json (the encrypted "enc" block stays there);
+   the sheet then asks for the PIN automatically. */
+function pinRequired(){return !(CFG&&CFG.kvdb&&CFG.kvdb.wk)}
+function showPinField(){
+  var w=$('pinWrap');
+  if(!pinRequired()||localStorageGet('wod_wk')){w.style.display='none';w.innerHTML='';return}
+  if(!$('pin')){w.innerHTML='<label class="f" for="pin">PIN</label><input type="password" id="pin" inputmode="numeric" autocomplete="off" placeholder="Deans\' PIN">'}
+  w.style.display='block';
+}
+function localStorageGet(k){try{return localStorage.getItem(k)}catch(e){return null}}
 function getKey(){
-  var saved=null;try{saved=localStorage.getItem('wod_wk')}catch(e){}
+  if(!pinRequired())return Promise.resolve(CFG.kvdb.wk);
+  var saved=localStorageGet('wod_wk');
   if(saved)return Promise.resolve(saved);
-  var pin=$('pin').value.trim();
+  var pin=$('pin')?$('pin').value.trim():'';
   if(!pin)return Promise.reject(new Error('Enter the PIN.'));
   return unlock(pin).then(function(k){try{localStorage.setItem('wod_wk',k)}catch(e){}return k},function(){throw new Error('That PIN is not right.')});
 }
@@ -214,9 +240,7 @@ function openSheet(){
   var o='';for(var i=0;i<6;i++){var d=addDays(today,i);o+='<option value="'+d+'">'+esc(i===0?'Today - '+fmt(d,{weekday:'short',month:'short',day:'numeric'}):fmt(d,{weekday:'long',month:'short',day:'numeric'}))+'</option>'}
   $('date').innerHTML=o;
   $('deanChecks').innerHTML=Object.keys(S.deans).map(function(k){return '<label class="chk"><input type="checkbox" value="'+k+'"> '+esc(S.deans[k].name)+' <span class="mut">('+(S.deans[k].dorm==='boys'?"boys'":"girls'")+' dean)</span></label>'}).join('');
-  syncDeans();$('note').value='';$('pin').value='';
-  var unlocked=false;try{unlocked=!!localStorage.getItem('wod_wk')}catch(e){}
-  $('pinWrap').style.display=unlocked?'none':'block';$('remWrap').style.display=unlocked?'block':'none';
+  syncDeans();$('note').value='';showPinField();
   setMode('on');
   $('ov').className='ov-wrap on';
 }
@@ -247,8 +271,7 @@ function save(clear){
     liveOK=true;render();closeSheet();
   }).catch(function(e){
     show('err',e.message||'Could not save. Check your connection and try again.');
-    var unlocked=false;try{unlocked=!!localStorage.getItem('wod_wk')}catch(x){}
-    $('pinWrap').style.display=unlocked?'none':'block';$('remWrap').style.display=unlocked?'block':'none';
+    showPinField();
   }).then(function(){$('save').disabled=false});
 }
 
@@ -260,7 +283,6 @@ $('dorm').onchange=function(){syncDeans();syncReset()};
 $('date').onchange=function(){syncDeans();syncReset()};
 $('save').onclick=function(){save(false)};
 $('reset').onclick=function(){save(true)};
-$('forget').onclick=function(){try{localStorage.removeItem('wod_wk')}catch(e){}$('pinWrap').style.display='block';$('remWrap').style.display='none'};
 
 loadAll();
 setInterval(render,60000);
