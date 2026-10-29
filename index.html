@@ -10,8 +10,8 @@
 :root{--bg:#f6f4ef;--ink:#1d1d1b;--muted:#77756f;--accent:#1f4fbf;--line:#ddd9cf;--card:#fff;--boys:#0000ff;--girls:#f07c1e;--warn:#9a5b00;--warnbg:#fff4de}
 *{box-sizing:border-box}
 html{-webkit-text-size-adjust:100%}
-body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.3 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif}
-main{max-width:520px;margin:0 auto;padding:max(8px,env(safe-area-inset-top)) 12px max(8px,env(safe-area-inset-bottom));display:flex;flex-direction:column;gap:6px}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.3 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;min-height:100vh;min-height:100dvh;display:flex;flex-direction:column;justify-content:center}
+main{box-sizing:border-box;width:100%;max-width:520px;margin:0 auto;padding:max(8px,env(safe-area-inset-top)) 12px max(8px,env(safe-area-inset-bottom));display:flex;flex-direction:column;gap:6px}
 h1{font-size:1.35rem;margin:0;letter-spacing:-.01em;flex:none}
 #cards{display:flex;flex-direction:column;gap:6px}
 .card{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:6px 10px;display:flex;flex-direction:column;gap:4px}
