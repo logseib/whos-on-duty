@@ -33,7 +33,11 @@ h1{font-size:1.35rem;margin:0;letter-spacing:-.01em;flex:none}
 .person{display:flex;align-items:center;gap:10px;min-width:0}
 .av{border-radius:50%;object-fit:cover;background:#e7e3d8;flex:none;display:inline-flex;align-items:center;justify-content:center;color:#5a574f;font-weight:600;overflow:hidden;width:44px;height:44px;font-size:.9rem;border:1px solid #d9d9d9;padding:0}
 .card.two .av{width:34px;height:34px;font-size:.75rem}
-.pname{font-size:1.4rem;font-weight:650;line-height:1.1}
+.pname{font-size:1.4rem;font-weight:650;line-height:1.1;white-space:nowrap;flex:none}
+.pill{margin-left:auto;flex:none;display:inline-flex;align-items:center;gap:3px;white-space:nowrap;background:#e6f6e8;color:#2e8b47;font-size:12.5px;font-weight:500;line-height:1.2;border-radius:999px;padding:3px 9px}
+.pill svg{width:11px;height:11px;flex:none;display:block}
+@media (max-width:430px){.person{gap:8px}.pill{font-size:10.5px;padding:3px 6px;gap:2px}.pill svg{width:10px;height:10px}}
+@media (max-width:380px){.pill .lbl{display:none}}
 .none{font-size:.9rem;font-weight:600;color:var(--muted)}
 .nnote{font-size:.7rem;color:var(--muted);font-weight:400;line-height:1.1}
 .nx{flex:none;background:var(--card);border:1px solid var(--line);border-radius:10px;padding:4px 10px;font-size:.72rem}
@@ -92,7 +96,7 @@ body.go .st{opacity:1;transform:none}
 #ck .bg{fill:#f3f3f3}
 #ck .ring{fill:none;stroke:#9a9a9a;stroke-width:1;stroke-dasharray:63;stroke-dashoffset:63;stroke-linecap:round}
 #ck .tick{fill:none;stroke:#9a9a9a;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
-body.go #ck{animation:ckslide .9s cubic-bezier(.45,0,.25,1) .3s both}
+body.go #ck{animation:ckslide .9s cubic-bezier(.45,0,.25,1) .3s both,ckfade .6s ease 7.75s both}
 body.go #hdate{animation:dreveal .9s cubic-bezier(.45,0,.25,1) .3s both}
 body.go #ck .ring{animation:ckring 1s ease-in-out 1.25s both,ckgreen .3s ease 2.3s both}
 body.go #ck .tick{animation:ckgreen .3s ease 2.3s both}
@@ -101,10 +105,13 @@ body.go #ck svg{animation:ckpop .45s ease 2.3s both}
 @keyframes dreveal{from{clip-path:inset(-4px 0 -4px calc(var(--tx,0px) - 17px))}to{clip-path:inset(-4px 0 -4px -17px)}}
 @keyframes ckring{from{stroke-dashoffset:63}to{stroke-dashoffset:0}}
 @keyframes ckgreen{from{stroke:#9a9a9a}to{stroke:#2e9e4f}}
+@keyframes ckfade{from{opacity:1}to{opacity:0}}
 @keyframes ckpop{0%{transform:scale(1)}45%{transform:scale(1.25)}100%{transform:scale(1)}}
 @media (prefers-reduced-motion:reduce){
 .st{opacity:1;transform:none;transition:none}
-#ck{transform:none!important;animation:none!important}
+#ck{transform:none!important}
+body.go #ck{animation:ckhide .01s linear 5s both!important}
+@keyframes ckhide{from{opacity:1}to{opacity:0}}
 #hdate{animation:none!important;clip-path:none!important}
 #ck .ring{animation:none!important;stroke-dashoffset:0!important;stroke:#2e9e4f!important}
 #ck .tick{animation:none!important;stroke:#2e9e4f!important}
@@ -166,6 +173,9 @@ var params=new URLSearchParams(location.search);
 var FAKE_NOW=params.get('now'); // testing aid: ?now=2026-10-29T10:00-07:00
 function nowMs(){return FAKE_NOW?Date.parse(FAKE_NOW):Date.now()}
 var MS=86400000;
+/* Load time shown in the pills: set once, never updated. */
+var LOADED=(function(){try{return new Date().toLocaleTimeString('en-US',{timeZone:'America/Phoenix',hour:'numeric',minute:'2-digit'}).replace(/[\s\u202f]*([AP])M/i,function(m,x){return x.toLowerCase()+'m'})}catch(e){return''}})();
+var PILL='<span class="pill"><span class="lbl">Up to date</span><svg viewBox="0 0 12 12" aria-hidden="true"><path d="M2.2 6.3l2.6 2.6 5-5.6" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>'+(LOADED?'<span>('+LOADED+')</span>':'')+'</span>';
 function dutyDate(ms){ms=ms==null?nowMs():ms;return new Date(ms-14*3600000).toISOString().slice(0,10)} // Phoenix = UTC-7, shift starts 7:00
 function addDays(s,n){return new Date(Date.parse(s+'T00:00:00Z')+n*MS).toISOString().slice(0,10)}
 function fmt(s,o){return new Date(s+'T00:00:00Z').toLocaleDateString('en-US',Object.assign({timeZone:'UTC'},o))}
@@ -202,12 +212,12 @@ function render(){
     var D=S.dorms[dorm],r=resolve(dorm,today);
     html+='<section class="card st '+dorm+(r.deans.length>1?' two':'')+'" style="--d:'+(dorm==='boys'?'.5s':'1s')+'"><div class="hd"><h2>'+esc(D.label)+'</h2><a class="call" href="tel:'+esc(D.phone.replace(/[^0-9+]/g,''))+'">Dean on duty '+esc(D.phone)+'</a></div><div class="now">';
     if(r.deans.length){
-      html+=r.deans.map(function(id){return '<div class="person">'+avatarL(id)+'<div class="pname">'+esc(S.deans[id].name)+'</div></div>'}).join('');
+      html+=r.deans.map(function(id,k){return '<div class="person">'+avatarL(id)+'<div class="pname">'+esc(S.deans[id].name)+'</div>'+(k===0?PILL:'')+'</div>'}).join('');
       if(r.note)html+='<div class="nnote">'+esc(r.note)+'</div>';
     }else if(r.src==='gap'){
-      html+='<div class="none">Not scheduled</div>';
+      html+='<div class="person"><div class="none">Not scheduled</div>'+PILL+'</div>';
     }else{
-      html+='<div class="none">No duty<div class="nnote">'+esc(r.note)+'</div></div>';
+      html+='<div class="person"><div class="none">No duty<div class="nnote">'+esc(r.note)+'</div></div>'+PILL+'</div>';
     }
     html+='</div></section>';
   });
