@@ -60,7 +60,7 @@ select,input[type=text],input[type=password],input[type=tel]{width:100%;font:inh
 </head>
 <body>
 <main>
-  <h1>Who's on duty?</h1>
+  <h1 style="display:flex;justify-content:space-between;align-items:baseline">Who&#39;s on duty?<span id="hdate" style="color:#9a9a9a;font-weight:inherit"></span></h1><script>(function(){function u(){var d=new Date(),o={timeZone:"America/Phoenix"};document.getElementById("hdate").textContent=d.toLocaleDateString("en-US",Object.assign({weekday:"short"},o))+", "+d.toLocaleDateString("en-US",Object.assign({month:"short",day:"numeric"},o))}u();setInterval(u,60000)})();</script>
   <div id="cards"></div>
   <div class="nx" id="nx"></div>
   <button class="btn" id="open">I'm on duty / Issue a correction</button>
