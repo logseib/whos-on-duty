@@ -1,10 +1,12 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" style="background:#f3f3f3">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
 <meta name="robots" content="noindex,nofollow">
 <meta name="theme-color" content="#f3f3f3">
+<style>html,body{background:#f3f3f3}.st{opacity:0}</style>
+<noscript><style>.st{opacity:1!important;transform:none!important}</style></noscript>
 <link rel="manifest" href="manifest.json">
 <link rel="apple-touch-icon" href="icon-180.png">
 <link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
@@ -79,14 +81,42 @@ select,input[type=text],input[type=password],input[type=tel]{width:100%;font:inh
 #a2hs li::before{content:counter(s);font-size:12px;color:var(--muted);width:10px}
 #a2hs .ic{display:inline-flex;align-items:center;justify-content:center;width:34px;height:34px;border-radius:8px;background:#ececec;flex:none}
 #a2hs .x{position:absolute;top:4px;right:8px;background:none;border:0;color:var(--ink);font-size:30px;line-height:1;width:auto;margin:0;padding:6px 8px;cursor:pointer}
+/* ---- boot: staggered fade-in + header check animation (transform/opacity only) ---- */
+.st{opacity:0;transform:translateY(4px);transition:opacity .5s ease var(--d,0s),transform .5s ease var(--d,0s)}
+body.go .st{opacity:1;transform:none}
+#hr{position:relative;display:block;padding-left:28px}
+#hdate{display:inline-block}
+#ck{position:absolute;left:0;top:50%;margin-top:-11px;width:22px;height:22px;transform:translateX(var(--tx,0px))}
+#ck svg{display:block;width:22px;height:22px;overflow:visible}
+#ck .bg{fill:#f3f3f3}
+#ck .ring{fill:none;stroke:#9a9a9a;stroke-width:1;stroke-dasharray:63;stroke-dashoffset:63;stroke-linecap:round}
+#ck .tick{fill:none;stroke:#9a9a9a;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+body.go #ck{animation:ckslide .9s cubic-bezier(.45,0,.25,1) .3s both}
+body.go #hdate{animation:dreveal .9s cubic-bezier(.45,0,.25,1) .3s both}
+body.go #ck .ring{animation:ckring 1s ease-in-out 1.25s both,ckgreen .3s ease 2.3s both}
+body.go #ck .tick{animation:ckgreen .3s ease 2.3s both}
+body.go #ck svg{animation:ckpop .45s ease 2.3s both}
+@keyframes ckslide{from{transform:translateX(var(--tx,0px))}to{transform:translateX(0)}}
+@keyframes dreveal{from{clip-path:inset(-4px 0 -4px calc(var(--tx,0px) - 17px))}to{clip-path:inset(-4px 0 -4px -17px)}}
+@keyframes ckring{from{stroke-dashoffset:63}to{stroke-dashoffset:0}}
+@keyframes ckgreen{from{stroke:#9a9a9a}to{stroke:#2e9e4f}}
+@keyframes ckpop{0%{transform:scale(1)}45%{transform:scale(1.25)}100%{transform:scale(1)}}
+@media (prefers-reduced-motion:reduce){
+.st{opacity:1;transform:none;transition:none}
+#ck{transform:none!important;animation:none!important}
+#hdate{animation:none!important;clip-path:none!important}
+#ck .ring{animation:none!important;stroke-dashoffset:0!important;stroke:#2e9e4f!important}
+#ck .tick{animation:none!important;stroke:#2e9e4f!important}
+#ck svg{animation:none!important}
+}
 </style>
 </head>
 <body>
 <main>
-  <h1 style="display:flex;justify-content:space-between;align-items:baseline">Who&#39;s on duty?<span id="hdate" style="color:#9a9a9a;font-weight:inherit"></span></h1><script>(function(){function u(){var d=new Date(),o={timeZone:"America/Phoenix"};document.getElementById("hdate").textContent=d.toLocaleDateString("en-US",Object.assign({weekday:"short"},o))+", "+d.toLocaleDateString("en-US",Object.assign({month:"short",day:"numeric"},o))}u();setInterval(u,60000)})();</script>
+  <h1 class="st" style="display:flex;justify-content:space-between;align-items:baseline">Who&#39;s on duty?<span id="hr"><span id="ck" aria-hidden="true"><svg viewBox="0 0 22 22"><circle class="bg" cx="11" cy="11" r="10"/><circle class="ring" cx="11" cy="11" r="10" transform="rotate(-90 11 11)"/><path class="tick" d="M6.6 11.4l3.1 3.1 5.7-6.4"/></svg></span><span id="hdate" style="color:#9a9a9a;font-weight:inherit"></span></span></h1><script>(function(){function u(){var d=new Date(),o={timeZone:"America/Phoenix"};document.getElementById("hdate").textContent=d.toLocaleDateString("en-US",Object.assign({weekday:"short"},o))+", "+d.toLocaleDateString("en-US",Object.assign({month:"short",day:"numeric"},o))}u();setInterval(u,60000)})();</script>
   <div id="cards"></div>
-  <div class="nx" id="nx"></div>
-  <button class="btn" id="open">I'm on duty / Issue a correction</button>
+  <div class="nx st" style="--d:1.5s" id="nx"></div>
+  <button class="btn st" style="--d:2s" id="open">I'm on duty / Issue a correction</button>
 </main>
 
 <div class="ov-wrap" id="ov" role="dialog" aria-modal="true">
@@ -168,7 +198,7 @@ function render(){
   var today=dutyDate(),html='';
   ['boys','girls'].forEach(function(dorm){
     var D=S.dorms[dorm],r=resolve(dorm,today);
-    html+='<section class="card '+dorm+(r.deans.length>1?' two':'')+'"><div class="hd"><h2>'+esc(D.label)+'</h2><a class="call" href="tel:'+esc(D.phone.replace(/[^0-9+]/g,''))+'">Dean on duty '+esc(D.phone)+'</a></div><div class="now">';
+    html+='<section class="card st '+dorm+(r.deans.length>1?' two':'')+'" style="--d:'+(dorm==='boys'?'.5s':'1s')+'"><div class="hd"><h2>'+esc(D.label)+'</h2><a class="call" href="tel:'+esc(D.phone.replace(/[^0-9+]/g,''))+'">Dean on duty '+esc(D.phone)+'</a></div><div class="now">';
     if(r.deans.length){
       html+=r.deans.map(function(id){return '<div class="person">'+avatarL(id)+'<div class="pname">'+esc(S.deans[id].name)+'</div></div>'}).join('');
       if(r.note)html+='<div class="nnote">'+esc(r.note)+'</div>';
@@ -194,36 +224,38 @@ function fmtTime(iso){try{return new Date(iso).toLocaleTimeString('en-US',{timeZ
 
 /* ---------- data ---------- */
 function getJSON(u){return fetch(u,{cache:'no-store'}).then(function(r){if(!r.ok)throw new Error(r.status);return r.json()})}
-function kvUrl(){return 'https://kvdb.io/'+CFG.kvdb.bucket+'/'+CFG.kvdb.key}
+function gasOn(){return !!(CFG&&CFG.gasUrl&&/^https?:\/\//.test(CFG.gasUrl))}
 function loadLive(){
-  if(!CFG||!CFG.kvdb)return Promise.resolve();
-  return fetch(kvUrl(),{cache:'no-store'}).then(function(r){
-    if(r.status===404){LIVE=[];return}
+  if(!gasOn())return Promise.resolve();
+  return fetch(CFG.gasUrl,{cache:'no-store'}).then(function(r){
     if(!r.ok)throw new Error(r.status);
-    return r.json().then(function(j){LIVE=(j&&j.items)||[]});
+    return r.json().then(function(j){if(!j||!j.ok)throw new Error('bad');LIVE=j.items||[]});
   }).then(function(){liveOK=true;lastLive=Date.now();try{localStorage.setItem('wod_live',JSON.stringify(LIVE))}catch(e){}})
   .catch(function(){liveOK=false;try{LIVE=JSON.parse(localStorage.getItem('wod_live')||'[]')}catch(e){LIVE=[]}});
 }
 function loadAll(){
   return Promise.all([getJSON('data/schedule.json'),getJSON('data/overrides.json').catch(function(){return{items:[]}}),getJSON('data/config.json').catch(function(){return null})]).then(function(a){
     S=a[0];FILE=a[1].items||[];CFG=a[2];return loadLive();
-  }).then(render).catch(function(e){$('cards').textContent='Could not load the schedule. Please try again.'});
+  }).then(render).catch(function(e){$('cards').textContent='Could not load the schedule. Please try again.'}).then(boot);
 }
-
-/* ---------- crypto: PIN unlocks the write key ---------- */
-function b64(s){var b=atob(s),u=new Uint8Array(b.length);for(var i=0;i<b.length;i++)u[i]=b.charCodeAt(i);return u}
-function unlock(pin){
-  var e=CFG.kvdb.enc,te=new TextEncoder();
-  return crypto.subtle.importKey('raw',te.encode(pin),'PBKDF2',false,['deriveKey']).then(function(k){
-    return crypto.subtle.deriveKey({name:'PBKDF2',salt:b64(e.salt),iterations:e.iter,hash:'SHA-256'},k,{name:'AES-GCM',length:256},false,['decrypt'])
-  }).then(function(k){return crypto.subtle.decrypt({name:'AES-GCM',iv:b64(e.iv)},k,b64(e.ct))}).then(function(p){
-    var t=new TextDecoder().decode(p);if(t.indexOf('WOD1:')!==0)throw new Error('bad');return t.slice(5);
+/* Start the staggered fade-in once data is rendered and photos are in (or after a short cap), so nothing jumps. */
+var booted=false;
+function boot(){
+  if(booted)return;booted=true;
+  var imgs=[].slice.call(document.querySelectorAll('#cards img'));
+  var done=Promise.all(imgs.map(function(i){return i.complete?0:new Promise(function(r){i.onload=i.onerror=r})}));
+  Promise.race([done,new Promise(function(r){setTimeout(r,1500)})]).then(function(){
+    var hr=$("hr");
+    if(hr)hr.style.setProperty('--tx',Math.max(0,hr.offsetWidth-22)+'px');
+    requestAnimationFrame(function(){requestAnimationFrame(function(){document.body.classList.add('go')})});
   });
 }
-/* The write key is only stored encrypted (config.kvdb.enc). It is unlocked by the four digit code at save time. */
-function getKey(code){
+setTimeout(function(){document.body.classList.add('go')},6000); /* safety: never leave the page hidden */
+
+/* ---------- passcode: sent with each save and checked on the server ---------- */
+function checkCode(code){
   if(!/^[0-9]{4}$/.test(code))return Promise.reject(new Error('Please enter the four digit code.'));
-  return unlock(code).then(function(k){return k},function(){throw new Error("That code isn't right. Please try again.")});
+  return Promise.resolve(code);
 }
 
 /* ---------- sheet ---------- */
@@ -288,7 +320,7 @@ function save(clear){
     });
     if(!entries.length){show('info','No changes to save.');return}
   }
-  if(!CFG||!CFG.kvdb){show('err','Live changes are not turned on for this site yet.');return}
+  if(!gasOn()){show('err','Live changes are not turned on for this site yet.');return}
   pending={entries:entries,me:me};
   showStep('code');
 }
@@ -296,16 +328,15 @@ function commit(){
   if(!pending)return;
   var entries=pending.entries,me=pending.me;
   hideMsg();$('codeOk').disabled=true;$('codeBack').disabled=true;
-  getKey($('code').value.trim()).then(function(wk){
-    return fetch(kvUrl(),{cache:'no-store'}).then(function(r){return r.status===404?{items:[]}:(r.ok?r.json():Promise.reject(new Error('read '+r.status)))}).then(function(cur){
-      var cut=addDays(dutyDate(),-10);
-      var items=(cur.items||[]).filter(function(i){return i.date>=cut&&!entries.some(function(e){return e.date===i.date&&e.dorm===i.dorm})});
-      items=items.concat(entries);
-      return fetch(kvUrl()+'?access_token='+encodeURIComponent(wk)+'&ttl=604800',{method:'PUT',headers:{'Content-Type':'text/plain'},body:JSON.stringify({items:items})}).then(function(r){
-        if(r.status===403){return r.text().then(function(t){throw new Error(/verif/i.test(t)?'Live changes are not activated on the server yet. Ask Logan.':'The server did not accept the change. Ask Logan.')})}
-        if(!r.ok)throw new Error('Server said '+r.status);
-        LIVE=items;
-      });
+  checkCode($('code').value.trim()).then(function(pin){
+    return fetch(CFG.gasUrl,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify({pin:pin,action:'save',entries:entries})}).then(function(r){
+      if(!r.ok)throw new Error('Server said '+r.status);
+      return r.json();
+    }).then(function(j){
+      if(j&&j.ok){LIVE=j.items||[];return}
+      if(j&&j.error==='bad_pin')throw new Error("That code isn't right. Please try again.");
+      if(j&&j.error==='locked')throw new Error('Too many wrong codes. Please wait a few minutes.');
+      throw new Error('The server did not accept the change. Ask Logan.');
     });
   }).then(function(){
     try{localStorage.setItem('wod_me',me);localStorage.setItem('wod_live',JSON.stringify(LIVE))}catch(e){}
