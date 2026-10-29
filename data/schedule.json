@@ -6,7 +6,7 @@
  "updated": "2026-10-29",
  "sources": {
   "boys": "Dean on Duty roster (Notion), Aug 13 - Dec 13",
-  "girls": "Dean Schedule Aug-Dec (weekends only)"
+  "girls": "Dean Team chat (Teams), Grecia Campos, Oct 29"
  },
  "deans": {
   "grecia": {
@@ -51,7 +51,7 @@
     "grecia",
     "savannah"
    ],
-   "gap": "Weekday duty for the girls' dorm has not been entered yet."
+   "gap": "No dean is scheduled for this day."
   }
  },
  "schedule": {
@@ -466,40 +466,119 @@
     "to": "2026-11-01",
     "deans": [
      "grecia"
-    ],
-    "note": "Open Gym, Symphony"
+    ]
+   },
+   {
+    "from": "2026-11-02",
+    "to": "2026-11-03",
+    "deans": [
+     "savannah"
+    ]
+   },
+   {
+    "from": "2026-11-04",
+    "to": "2026-11-05",
+    "deans": [
+     "grecia"
+    ]
    },
    {
     "from": "2026-11-06",
     "to": "2026-11-08",
     "deans": [
      "savannah"
-    ],
-    "note": "Mini Golf"
+    ]
+   },
+   {
+    "from": "2026-11-09",
+    "to": "2026-11-10",
+    "deans": [
+     "grecia"
+    ]
+   },
+   {
+    "from": "2026-11-11",
+    "to": "2026-11-12",
+    "deans": [
+     "savannah"
+    ]
    },
    {
     "from": "2026-11-13",
     "to": "2026-11-15",
     "deans": [
      "grecia"
-    ],
-    "note": "Faculty Fam Vesper, Ice skating"
+    ]
+   },
+   {
+    "from": "2026-11-16",
+    "to": "2026-11-17",
+    "deans": [
+     "savannah"
+    ]
+   },
+   {
+    "from": "2026-11-18",
+    "to": "2026-11-20",
+    "deans": [
+     "grecia"
+    ]
+   },
+   {
+    "from": "2026-11-29",
+    "to": "2026-12-01",
+    "deans": [
+     "savannah"
+    ]
+   },
+   {
+    "from": "2026-12-02",
+    "to": "2026-12-03",
+    "deans": [
+     "grecia"
+    ]
    },
    {
     "from": "2026-12-04",
     "to": "2026-12-06",
     "deans": [
      "savannah"
-    ],
-    "note": "SA Class Basketball"
+    ]
+   },
+   {
+    "from": "2026-12-07",
+    "to": "2026-12-08",
+    "deans": [
+     "grecia"
+    ]
+   },
+   {
+    "from": "2026-12-09",
+    "to": "2026-12-10",
+    "deans": [
+     "savannah"
+    ]
    },
    {
     "from": "2026-12-11",
     "to": "2026-12-13",
     "deans": [
      "grecia"
-    ],
-    "note": "Christmas Concert, Yogurtini"
+    ]
+   },
+   {
+    "from": "2026-12-14",
+    "to": "2026-12-15",
+    "deans": [
+     "savannah"
+    ]
+   },
+   {
+    "from": "2026-12-16",
+    "to": "2026-12-18",
+    "deans": [
+     "grecia"
+    ]
    }
   ]
  },
