@@ -10,17 +10,16 @@
 :root{--bg:#f6f4ef;--ink:#1d1d1b;--muted:#77756f;--accent:#1f4fbf;--line:#ddd9cf;--card:#fff;--boys:#1f4fbf;--girls:#a8325e;--warn:#9a5b00;--warnbg:#fff4de}
 *{box-sizing:border-box}
 html{-webkit-text-size-adjust:100%}
-html,body{height:100%}
 body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.3 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif}
-main{height:100vh;height:100dvh;max-width:520px;margin:0 auto;padding:max(8px,env(safe-area-inset-top)) 12px max(8px,env(safe-area-inset-bottom));display:flex;flex-direction:column;gap:6px}
+main{max-width:520px;margin:0 auto;padding:max(8px,env(safe-area-inset-top)) 12px max(8px,env(safe-area-inset-bottom));display:flex;flex-direction:column;gap:6px}
 h1{font-size:1.1rem;margin:0;letter-spacing:-.01em;flex:none}
-#cards{flex:1;min-height:0;display:flex;flex-direction:column;gap:6px}
-.card{flex:1;min-height:0;background:var(--card);border:1px solid var(--line);border-left:4px solid var(--c);border-radius:10px;padding:6px 10px;display:flex;flex-direction:column;gap:4px}
+#cards{display:flex;flex-direction:column;gap:6px}
+.card{background:var(--card);border:1px solid var(--line);border-left:4px solid var(--c);border-radius:10px;padding:6px 10px;display:flex;flex-direction:column;gap:4px}
 .card.boys{--c:var(--boys)}.card.girls{--c:var(--girls)}
 .hd{display:flex;justify-content:space-between;align-items:center;flex:none}
 .card h2{font-size:.66rem;text-transform:uppercase;letter-spacing:.08em;color:var(--c);margin:0}
 .call{color:var(--c);font-weight:650;font-size:.8rem;text-decoration:none;padding:2px 0}
-.now{flex:1;min-height:0;display:flex;flex-direction:column;justify-content:center;gap:4px}
+.now{display:flex;flex-direction:column;gap:4px}
 .person{display:flex;align-items:center;gap:10px;min-width:0}
 .av{border-radius:50%;object-fit:cover;background:#e7e3d8;flex:none;display:inline-flex;align-items:center;justify-content:center;color:#5a574f;font-weight:600;overflow:hidden;width:44px;height:44px;font-size:.9rem;border:2px solid var(--c);padding:0}
 .card.two .av{width:34px;height:34px;font-size:.75rem}
@@ -34,7 +33,7 @@ h1{font-size:1.1rem;margin:0;letter-spacing:-.01em;flex:none}
 .nx td{padding:1.5px 0;border-top:1px solid #efece4;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;padding-right:6px}
 .nx td:first-child{color:var(--muted);width:22%}
 .nx td.m{color:var(--muted)}.nx td.ch{color:var(--warn)}
-.btn{flex:none;display:block;width:100%;border:0;border-radius:10px;background:var(--accent);color:#fff;font:600 .82rem/1 inherit;font-family:inherit;padding:11px;cursor:pointer}
+.btn{display:block;width:100%;border:0;border-radius:10px;background:var(--accent);color:#fff;font:600 .82rem/1 inherit;font-family:inherit;padding:11px;cursor:pointer}
 .btn.sec{background:#fff;color:var(--ink);border:1px solid var(--line)}
 .btn:disabled{opacity:.55}
 .link{background:none;border:0;color:var(--accent);font:inherit;font-size:.9rem;padding:8px 0;cursor:pointer}
