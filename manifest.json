@@ -1,6 +1,6 @@
 {
-  "name": "Who's on duty?",
-  "short_name": "On duty",
+  "name": "Dean on Duty",
+  "short_name": "Dean on Duty",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",
