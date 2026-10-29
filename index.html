@@ -138,7 +138,7 @@ function render(){
   var today=dutyDate(),html='';
   ['boys','girls'].forEach(function(dorm){
     var D=S.dorms[dorm],r=resolve(dorm,today);
-    html+='<section class="card '+dorm+(r.deans.length>1?' two':'')+'"><div class="hd"><h2>'+esc(D.label)+'</h2><a class="call" href="tel:'+esc(D.phone.replace(/[^0-9+]/g,''))+'">Call '+esc(D.phone)+'</a></div><div class="now">';
+    html+='<section class="card '+dorm+(r.deans.length>1?' two':'')+'"><div class="hd"><h2>'+esc(D.label)+'</h2><a class="call" href="tel:'+esc(D.phone.replace(/[^0-9+]/g,''))+'">Dean on duty '+esc(D.phone)+'</a></div><div class="now">';
     if(r.deans.length){
       html+=r.deans.map(function(id){return '<div class="person">'+avatarL(id)+'<div class="pname">'+esc(S.deans[id].name)+'</div></div>'}).join('');
       if(r.note)html+='<div class="nnote">'+esc(r.note)+'</div>';
