@@ -40,8 +40,8 @@ h1{font-size:1.35rem;margin:0;letter-spacing:-.01em;flex:none}
 .link.red{color:#b3261e}
 .ov-wrap{position:fixed;inset:0;background:rgba(20,20,18,.45);display:none;align-items:flex-end;justify-content:center;z-index:10}
 .ov-wrap.on{display:flex}
-.sheet{background:var(--bg);width:100%;max-width:560px;max-height:92vh;max-height:92dvh;overflow:auto;border-radius:20px 20px 0 0;padding:18px 16px calc(20px + env(safe-area-inset-bottom))}
-.sheet h3{margin:0 0 12px;font-size:1.2rem}
+.sheet{background:var(--bg);width:100%;max-width:560px;max-height:92vh;max-height:92dvh;overflow:auto;border-radius:20px 20px 0 0;padding:16px 16px calc(20px + env(safe-area-inset-bottom))}
+
 .seg{display:grid;grid-template-columns:1fr 1fr;gap:6px;background:#e9e5da;padding:4px;border-radius:12px;margin-bottom:14px}
 .seg button{border:0;background:transparent;padding:10px;border-radius:9px;font:600 .92rem inherit;font-family:inherit;color:var(--muted)}
 .seg button.on{background:#fff;color:var(--ink);box-shadow:0 1px 2px rgba(0,0,0,.12)}
@@ -49,6 +49,7 @@ label.f{display:block;font-size:.8rem;color:var(--muted);margin:12px 0 5px}
 select,input[type=text],input[type=password],input[type=tel]{width:100%;font:inherit;font-size:16px;padding:12px;border:1px solid var(--line);border-radius:11px;background:#fff;color:var(--ink)}
 .chk{display:flex;align-items:center;gap:10px;background:#fff;border:1px solid var(--line);border-radius:11px;padding:8px 12px;margin-bottom:6px;font-size:.95rem}
 .chk input{width:20px;height:20px}
+.grp{font-size:.68rem;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin:10px 0 4px}
 .mut{color:var(--muted)}
 .msg{margin-top:12px;font-size:.9rem;padding:10px 12px;border-radius:10px;display:none}
 .msg.on{display:block}.msg.err{background:#fdecea;color:#8c1d18}.msg.ok{background:#e6f4ec;color:#14532d}.msg.info{background:#eef0f7;color:#3b4570}
@@ -65,26 +66,18 @@ select,input[type=text],input[type=password],input[type=tel]{width:100%;font:inh
   <button class="btn" id="open">I'm on duty / Issue a correction</button>
 </main>
 
-<div class="ov-wrap" id="ov" role="dialog" aria-modal="true" aria-labelledby="sheetTitle">
+<div class="ov-wrap" id="ov" role="dialog" aria-modal="true">
  <div class="sheet">
-  <h3 id="sheetTitle">Update who's on duty</h3>
   <div class="seg"><button id="m1" class="on" type="button">I'm on duty</button><button id="m2" type="button">Issue a correction</button></div>
 
   <label class="f" for="me">Who are you?</label>
   <select id="me"></select>
 
-  <label class="f" for="dorm">Dorm</label>
-  <select id="dorm"></select>
-
   <div id="corrOnly" style="display:none">
-    <label class="f" for="date">Day (duty day starts 7:00 AM)</label>
+    <label class="f" for="date">Day</label>
     <select id="date"></select>
-    <label class="f">Who is on duty</label>
     <div id="deanChecks"></div>
   </div>
-
-  <label class="f" for="note">Note (optional)</label>
-  <input type="text" id="note" maxlength="60" placeholder="e.g. Swapped with Jake">
 
   <div id="pinWrap" style="display:none"></div>
 
@@ -217,48 +210,61 @@ function hideMsg(){$('msg').className='msg'}
 function setMode(m){
   mode=m;$('m1').className=m==='on'?'on':'';$('m2').className=m==='corr'?'on':'';
   $('corrOnly').style.display=m==='corr'?'block':'none';
-  $('sheetTitle').textContent=m==='on'?"I'm on duty":'Issue a correction';
   $('save').textContent=m==='on'?"I'm on duty today":'Save correction';
   hideMsg();syncReset();
 }
+/* Dorm is never asked for: it comes from the dean's own dorm in config (S.deans[id].dorm). */
+function dormOf(id){return S.deans[id].dorm}
 function syncDeans(){
-  var d=$('date').value,dorm=$('dorm').value,cur=resolve(dorm,d).deans;
-  [].forEach.call(document.querySelectorAll('#deanChecks input'),function(c){c.checked=cur.indexOf(c.value)>=0});
+  var d=$('date').value;
+  Object.keys(S.dorms).forEach(function(dorm){
+    var cur=resolve(dorm,d).deans;
+    [].forEach.call(document.querySelectorAll('#deanChecks input[data-dorm="'+dorm+'"]'),function(c){c.checked=cur.indexOf(c.value)>=0});
+  });
 }
 function syncReset(){
-  var d=mode==='on'?dutyDate():$('date').value,dorm=$('dorm').value;
-  $('reset').style.display=(mode==='corr'&&resolve(dorm,d).src==='override')?'inline-block':'none';
+  var d=$('date').value;
+  $('reset').style.display=(mode==='corr'&&Object.keys(S.dorms).some(function(dorm){return resolve(dorm,d).src==='override'}))?'inline-block':'none';
 }
 function openSheet(){
   var today=dutyDate();
   var me=null;try{me=localStorage.getItem('wod_me')}catch(e){}
   $('me').innerHTML=Object.keys(S.deans).map(function(k){return '<option value="'+k+'">'+esc(S.deans[k].name)+'</option>'}).join('');
   if(me&&S.deans[me])$('me').value=me;
-  $('dorm').innerHTML=Object.keys(S.dorms).map(function(k){return '<option value="'+k+'">'+esc(S.dorms[k].label)+'</option>'}).join('');
-  $('dorm').value=S.deans[$('me').value].dorm;
   var o='';for(var i=0;i<6;i++){var d=addDays(today,i);o+='<option value="'+d+'">'+esc(i===0?'Today - '+fmt(d,{weekday:'short',month:'short',day:'numeric'}):fmt(d,{weekday:'long',month:'short',day:'numeric'}))+'</option>'}
   $('date').innerHTML=o;
-  $('deanChecks').innerHTML=Object.keys(S.deans).map(function(k){return '<label class="chk"><input type="checkbox" value="'+k+'"> '+esc(S.deans[k].name)+' <span class="mut">('+(S.deans[k].dorm==='boys'?"boys'":"girls'")+' dean)</span></label>'}).join('');
-  syncDeans();$('note').value='';showPinField();
+  $('deanChecks').innerHTML=Object.keys(S.dorms).map(function(dorm){
+    return '<div class="grp">'+esc(S.dorms[dorm].label)+'</div>'+Object.keys(S.deans).filter(function(k){return S.deans[k].dorm===dorm}).map(function(k){return '<label class="chk"><input type="checkbox" data-dorm="'+dorm+'" value="'+k+'"> '+esc(S.deans[k].name)+'</label>'}).join('');
+  }).join('');
+  syncDeans();showPinField();
   setMode('on');
   $('ov').className='ov-wrap on';
 }
 function closeSheet(){$('ov').className='ov-wrap'}
 
+function same(a,b){return a.slice().sort().join()===b.slice().sort().join()}
 function save(clear){
   hideMsg();
-  var me=$('me').value,dorm=$('dorm').value,date,deans,kind;
-  if(mode==='on'){date=dutyDate();deans=[me];kind='on-duty'}
-  else{date=$('date').value;deans=[].filter.call(document.querySelectorAll('#deanChecks input'),function(c){return c.checked}).map(function(c){return c.value});kind='correction';
-    if(!clear&&!deans.length&&!$('note').value.trim()){show('err','Pick who is on duty, or add a note such as "Dorm closed".');return}}
+  var me=$('me').value,date,entries=[],at=new Date(nowMs()).toISOString();
+  if(mode==='on'){
+    date=dutyDate();
+    entries.push({date:date,dorm:dormOf(me),deans:[me],kind:'on-duty',by:me,at:at,note:''});
+  }else{
+    date=$('date').value;
+    Object.keys(S.dorms).forEach(function(dorm){
+      if(clear){if(resolve(dorm,date).src==='override')entries.push({date:date,dorm:dorm,clear:true,by:me,at:at});return}
+      var picked=[].filter.call(document.querySelectorAll('#deanChecks input[data-dorm="'+dorm+'"]'),function(c){return c.checked}).map(function(c){return c.value});
+      if(!same(picked,resolve(dorm,date).deans))entries.push({date:date,dorm:dorm,deans:picked,kind:'correction',by:me,at:at,note:''});
+    });
+    if(!entries.length){show('info','No changes to save.');return}
+  }
   if(!CFG||!CFG.kvdb){show('err','Live changes are not turned on for this site yet.');return}
-  $('save').disabled=true;
+  $('save').disabled=true;$('reset').disabled=true;
   getKey().then(function(wk){
     return fetch(kvUrl(),{cache:'no-store'}).then(function(r){return r.status===404?{items:[]}:(r.ok?r.json():Promise.reject(new Error('read '+r.status)))}).then(function(cur){
       var cut=addDays(dutyDate(),-10);
-      var items=(cur.items||[]).filter(function(i){return i.date>=cut&&!(i.date===date&&i.dorm===dorm)});
-      if(clear)items.push({date:date,dorm:dorm,clear:true,by:me,at:new Date(nowMs()).toISOString()});
-      else items.push({date:date,dorm:dorm,deans:deans,kind:kind,by:me,at:new Date(nowMs()).toISOString(),note:$('note').value.trim()});
+      var items=(cur.items||[]).filter(function(i){return i.date>=cut&&!entries.some(function(e){return e.date===i.date&&e.dorm===i.dorm})});
+      items=items.concat(entries);
       return fetch(kvUrl()+'?access_token='+encodeURIComponent(wk)+'&ttl=604800',{method:'PUT',headers:{'Content-Type':'text/plain'},body:JSON.stringify({items:items})}).then(function(r){
         if(r.status===403){return r.text().then(function(t){if(/verif/i.test(t))throw new Error('Live changes are not activated on the server yet. Ask Logan.');try{localStorage.removeItem('wod_wk')}catch(e){}throw new Error('The saved unlock was rejected. Enter the PIN again.')})}
         if(!r.ok)throw new Error('Server said '+r.status);
@@ -271,15 +277,13 @@ function save(clear){
   }).catch(function(e){
     show('err',e.message||'Could not save. Check your connection and try again.');
     showPinField();
-  }).then(function(){$('save').disabled=false});
+  }).then(function(){$('save').disabled=false;$('reset').disabled=false});
 }
 
 $('open').onclick=openSheet;$('cancel').onclick=closeSheet;
 $('ov').addEventListener('click',function(e){if(e.target===$('ov'))closeSheet()});
 $('m1').onclick=function(){setMode('on')};$('m2').onclick=function(){setMode('corr');syncDeans();syncReset()};
-$('me').onchange=function(){$('dorm').value=S.deans[$('me').value].dorm;syncDeans();syncReset()};
-$('dorm').onchange=function(){syncDeans();syncReset()};
-$('date').onchange=function(){syncDeans();syncReset()};
+$('date').onchange=function(){syncDeans();syncReset();hideMsg()};
 $('save').onclick=function(){save(false)};
 $('reset').onclick=function(){save(true)};
 
