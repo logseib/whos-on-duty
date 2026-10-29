@@ -49,6 +49,7 @@ label.f{display:block;font-size:.8rem;color:var(--muted);margin:12px 0 5px}
 select,input[type=text],input[type=password],input[type=tel]{width:100%;font:inherit;font-size:16px;padding:12px;border:1px solid var(--line);border-radius:11px;background:#fff;color:var(--ink)}
 .chk{display:flex;align-items:center;gap:10px;background:#fff;border:1px solid var(--line);border-radius:11px;padding:8px 12px;margin-bottom:6px;font-size:.95rem}
 .chk input{width:20px;height:20px}
+.codein{font-size:28px;letter-spacing:.5em;text-align:center;margin-top:6px}
 .grp{font-size:.68rem;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin:10px 0 4px}
 .mut{color:var(--muted)}
 .msg{margin-top:12px;font-size:.9rem;padding:10px 12px;border-radius:10px;display:none}
@@ -68,6 +69,7 @@ select,input[type=text],input[type=password],input[type=tel]{width:100%;font:inh
 
 <div class="ov-wrap" id="ov" role="dialog" aria-modal="true">
  <div class="sheet">
+  <div id="formStep">
   <div class="seg"><button id="m1" class="on" type="button">I'm on duty</button><button id="m2" type="button">Issue a correction</button></div>
 
   <label class="f" for="me">Who are you?</label>
@@ -79,12 +81,17 @@ select,input[type=text],input[type=password],input[type=tel]{width:100%;font:inh
     <div id="deanChecks"></div>
   </div>
 
-  <div id="pinWrap" style="display:none"></div>
-
-  <div class="msg" id="msg"></div>
-
   <div class="flex"><button class="btn sec" id="cancel" type="button">Cancel</button><button class="btn" id="save" type="button">Save</button></div>
   <div style="text-align:center"><button class="link red" id="reset" type="button" style="display:none">Clear change and go back to the schedule</button></div>
+  </div>
+
+  <div id="codeStep" style="display:none">
+    <label class="f" for="code" style="font-size:1rem;color:var(--ink);margin-top:4px">Enter four digit code to save.</label>
+    <input type="tel" id="code" inputmode="numeric" pattern="[0-9]*" maxlength="4" autocomplete="off" placeholder="0000" class="codein">
+    <div class="flex"><button class="btn sec" id="codeBack" type="button">Back</button><button class="btn" id="codeOk" type="button">Save</button></div>
+  </div>
+
+  <div class="msg" id="msg"></div>
  </div>
 </div>
 
@@ -183,24 +190,10 @@ function unlock(pin){
     var t=new TextDecoder().decode(p);if(t.indexOf('WOD1:')!==0)throw new Error('bad');return t.slice(5);
   });
 }
-/* PIN is OFF for now: config.kvdb.wk holds the write key in the clear.
-   To re-enable: delete "wk" from data/config.json (the encrypted "enc" block stays there);
-   the sheet then asks for the PIN automatically. */
-function pinRequired(){return !(CFG&&CFG.kvdb&&CFG.kvdb.wk)}
-function showPinField(){
-  var w=$('pinWrap');
-  if(!pinRequired()||localStorageGet('wod_wk')){w.style.display='none';w.innerHTML='';return}
-  if(!$('pin')){w.innerHTML='<label class="f" for="pin">PIN</label><input type="password" id="pin" inputmode="numeric" autocomplete="off" placeholder="Deans\' PIN">'}
-  w.style.display='block';
-}
-function localStorageGet(k){try{return localStorage.getItem(k)}catch(e){return null}}
-function getKey(){
-  if(!pinRequired())return Promise.resolve(CFG.kvdb.wk);
-  var saved=localStorageGet('wod_wk');
-  if(saved)return Promise.resolve(saved);
-  var pin=$('pin')?$('pin').value.trim():'';
-  if(!pin)return Promise.reject(new Error('Enter the PIN.'));
-  return unlock(pin).then(function(k){try{localStorage.setItem('wod_wk',k)}catch(e){}return k},function(){throw new Error('That PIN is not right.')});
+/* The write key is only stored encrypted (config.kvdb.enc). It is unlocked by the four digit code at save time. */
+function getKey(code){
+  if(!/^[0-9]{4}$/.test(code))return Promise.reject(new Error('Please enter the four digit code.'));
+  return unlock(code).then(function(k){return k},function(){throw new Error("That code isn't right. Please try again.")});
 }
 
 /* ---------- sheet ---------- */
@@ -236,13 +229,20 @@ function openSheet(){
   $('deanChecks').innerHTML=Object.keys(S.dorms).map(function(dorm){
     return '<div class="grp">'+esc(S.dorms[dorm].label)+'</div>'+Object.keys(S.deans).filter(function(k){return S.deans[k].dorm===dorm}).map(function(k){return '<label class="chk"><input type="checkbox" data-dorm="'+dorm+'" value="'+k+'"> '+esc(S.deans[k].name)+'</label>'}).join('');
   }).join('');
-  syncDeans();showPinField();
-  setMode('on');
+  syncDeans();
+  showStep('form');setMode('on');
   $('ov').className='ov-wrap on';
 }
 function closeSheet(){$('ov').className='ov-wrap'}
 
 function same(a,b){return a.slice().sort().join()===b.slice().sort().join()}
+var pending=null;
+function showStep(w){
+  $('formStep').style.display=w==='form'?'block':'none';
+  $('codeStep').style.display=w==='code'?'block':'none';
+  hideMsg();
+  if(w==='code'){$('code').value='';setTimeout(function(){try{$('code').focus()}catch(e){}},50)}
+}
 function save(clear){
   hideMsg();
   var me=$('me').value,date,entries=[],at=new Date(nowMs()).toISOString();
@@ -259,25 +259,31 @@ function save(clear){
     if(!entries.length){show('info','No changes to save.');return}
   }
   if(!CFG||!CFG.kvdb){show('err','Live changes are not turned on for this site yet.');return}
-  $('save').disabled=true;$('reset').disabled=true;
-  getKey().then(function(wk){
+  pending={entries:entries,me:me};
+  showStep('code');
+}
+function commit(){
+  if(!pending)return;
+  var entries=pending.entries,me=pending.me;
+  hideMsg();$('codeOk').disabled=true;$('codeBack').disabled=true;
+  getKey($('code').value.trim()).then(function(wk){
     return fetch(kvUrl(),{cache:'no-store'}).then(function(r){return r.status===404?{items:[]}:(r.ok?r.json():Promise.reject(new Error('read '+r.status)))}).then(function(cur){
       var cut=addDays(dutyDate(),-10);
       var items=(cur.items||[]).filter(function(i){return i.date>=cut&&!entries.some(function(e){return e.date===i.date&&e.dorm===i.dorm})});
       items=items.concat(entries);
       return fetch(kvUrl()+'?access_token='+encodeURIComponent(wk)+'&ttl=604800',{method:'PUT',headers:{'Content-Type':'text/plain'},body:JSON.stringify({items:items})}).then(function(r){
-        if(r.status===403){return r.text().then(function(t){if(/verif/i.test(t))throw new Error('Live changes are not activated on the server yet. Ask Logan.');try{localStorage.removeItem('wod_wk')}catch(e){}throw new Error('The saved unlock was rejected. Enter the PIN again.')})}
+        if(r.status===403){return r.text().then(function(t){throw new Error(/verif/i.test(t)?'Live changes are not activated on the server yet. Ask Logan.':'The server did not accept the change. Ask Logan.')})}
         if(!r.ok)throw new Error('Server said '+r.status);
         LIVE=items;
       });
     });
   }).then(function(){
     try{localStorage.setItem('wod_me',me);localStorage.setItem('wod_live',JSON.stringify(LIVE))}catch(e){}
-    liveOK=true;render();closeSheet();
+    pending=null;liveOK=true;render();closeSheet();
   }).catch(function(e){
     show('err',e.message||'Could not save. Check your connection and try again.');
-    showPinField();
-  }).then(function(){$('save').disabled=false;$('reset').disabled=false});
+    $('code').value='';
+  }).then(function(){$('codeOk').disabled=false;$('codeBack').disabled=false});
 }
 
 $('open').onclick=openSheet;$('cancel').onclick=closeSheet;
@@ -286,6 +292,11 @@ $('m1').onclick=function(){setMode('on')};$('m2').onclick=function(){setMode('co
 $('date').onchange=function(){syncDeans();syncReset();hideMsg()};
 $('save').onclick=function(){save(false)};
 $('reset').onclick=function(){save(true)};
+$('codeBack').onclick=function(){pending=null;showStep('form')};
+$('codeOk').onclick=commit;
+$('code').oninput=function(){this.value=this.value.replace(/[^0-9]/g,'').slice(0,4);if(this.value.length===4)commit()};
+$('code').onkeydown=function(e){if(e.key==='Enter')commit()};
+try{localStorage.removeItem('wod_wk')}catch(e){}
 
 loadAll();
 setInterval(render,60000);
