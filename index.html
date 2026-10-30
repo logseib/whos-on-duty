@@ -103,6 +103,7 @@ select,input[type=text],input[type=password],input[type=tel]{width:100%;font:inh
 /* ---- boot: staggered fade-in + header check animation (transform/opacity only) ---- */
 .st{opacity:0;transform:translateY(4px);transition:opacity .5s ease var(--d,0s),transform .5s ease var(--d,0s)}
 body.go .st{opacity:1;transform:none}
+body.rs .st,body.rs .av img{transition:none!important}
 .av img{opacity:0;transition:opacity .4s ease}.av img.ld{opacity:1}
 #hr{position:relative;display:block;padding-left:28px}
 #hdate{display:inline-block}
@@ -126,7 +127,7 @@ body.go #ck svg{animation:ckpop .45s ease 2.3s both}
 </head>
 <body>
 <main>
-  <h1 style="display:flex;justify-content:space-between;align-items:baseline">Who&#39;s on duty?<span id="hr" class="st"><span id="ck" aria-hidden="true"><svg viewBox="0 0 22 22"><circle class="bg" cx="11" cy="11" r="10"/><circle class="ring" cx="11" cy="11" r="10" transform="rotate(-90 11 11)"/><path class="tick" d="M6.6 11.4l3.1 3.1 5.7-6.4"/></svg></span><span id="hdate" style="color:#9a9a9a;font-weight:inherit"></span></span></h1><script>(function(){function u(){var d=new Date(),o={timeZone:"America/Phoenix"};document.getElementById("hdate").textContent=d.toLocaleDateString("en-US",Object.assign({weekday:"short"},o))+", "+d.toLocaleDateString("en-US",Object.assign({month:"short",day:"numeric"},o))}u();setInterval(u,60000)})();</script>
+  <h1 style="display:flex;justify-content:space-between;align-items:baseline">Who&#39;s on duty?<span id="hr" class="st"><span id="ck" aria-hidden="true"><svg viewBox="0 0 22 22"><circle class="bg" cx="11" cy="11" r="10"/><circle class="ring" cx="11" cy="11" r="10" transform="rotate(-90 11 11)"/><path class="tick" d="M6.6 11.4l3.1 3.1 5.7-6.4"/></svg></span><span id="hdate" style="color:#9a9a9a;font-weight:inherit"></span></span></h1><script>(function(){function u(){var d=new Date(),o={timeZone:"America/Phoenix"};document.getElementById("hdate").textContent=d.toLocaleDateString("en-US",Object.assign({weekday:"short"},o))+", "+d.toLocaleDateString("en-US",Object.assign({month:"short",day:"numeric"},o))}u();window.wodDate=u;setInterval(u,60000)})();</script>
   <div id="cards"></div>
   <div class="nx st" style="--d:1.5s" id="nx"></div>
   <button class="btn st" style="--d:1.5s" id="open">I'm on duty / Issue a correction</button>
@@ -178,9 +179,10 @@ var params=new URLSearchParams(location.search);
 var FAKE_NOW=params.get('now'); // testing aid: ?now=2026-10-29T10:00-07:00
 function nowMs(){return FAKE_NOW?Date.parse(FAKE_NOW):Date.now()}
 var MS=86400000;
-/* Load time shown in the pills: set once, never updated. */
-var LOADED=(function(){try{return new Date().toLocaleTimeString('en-US',{timeZone:'America/Phoenix',hour:'numeric',minute:'2-digit'}).replace(/[\s\u202f]*([AP])M/i,function(m,x){return x.toLowerCase()+'m'})}catch(e){return''}})();
-var PILL='<span class="pill"><span class="pt"><span class="lbl">Up to date</span><svg viewBox="0 0 12 12" aria-hidden="true"><path d="M2.2 6.3l2.6 2.6 5-5.6" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>'+(LOADED?'<span>('+LOADED+')</span>':'')+'</span></span>';
+/* Time shown in the pills: the moment of the last full refresh (launch, or coming back to the app after a gap). */
+function stamp(){try{return new Date().toLocaleTimeString('en-US',{timeZone:'America/Phoenix',hour:'numeric',minute:'2-digit'}).replace(/[\s\u202f]*([AP])M/i,function(m,x){return x.toLowerCase()+'m'})}catch(e){return''}}
+var LOADED=stamp();
+function pill(){return '<span class="pill"><span class="pt"><span class="lbl">Up to date</span><svg viewBox="0 0 12 12" aria-hidden="true"><path d="M2.2 6.3l2.6 2.6 5-5.6" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>'+(LOADED?'<span>('+LOADED+')</span>':'')+'</span></span>'}
 function dutyDate(ms){ms=ms==null?nowMs():ms;return new Date(ms-14*3600000).toISOString().slice(0,10)} // Phoenix = UTC-7, shift starts 7:00
 function addDays(s,n){return new Date(Date.parse(s+'T00:00:00Z')+n*MS).toISOString().slice(0,10)}
 function fmt(s,o){return new Date(s+'T00:00:00Z').toLocaleDateString('en-US',Object.assign({timeZone:'UTC'},o))}
@@ -217,12 +219,12 @@ function render(){
     var D=S.dorms[dorm],r=resolve(dorm,today);
     html+='<section class="card st '+dorm+(r.deans.length>1?' two':'')+'" style="--d:'+(dorm==='boys'?'.5s':'1s')+'"><div class="hd"><h2>'+esc(D.label)+'</h2><a class="call" href="tel:'+esc(D.phone.replace(/[^0-9+]/g,''))+'">Dean on duty '+esc(D.phone)+'</a></div><div class="now">';
     if(r.deans.length){
-      html+=r.deans.map(function(id,k){return '<div class="person">'+avatarL(id)+'<div class="pname">'+esc(S.deans[id].name)+'</div>'+(k===0?PILL:'')+'</div>'}).join('');
+      html+=r.deans.map(function(id,k){return '<div class="person">'+avatarL(id)+'<div class="pname">'+esc(S.deans[id].name)+'</div>'+(k===0?pill():'')+'</div>'}).join('');
       if(r.note)html+='<div class="nnote">'+esc(r.note)+'</div>';
     }else if(r.src==='gap'){
-      html+='<div class="person"><div class="none">Not scheduled</div>'+PILL+'</div>';
+      html+='<div class="person"><div class="none">Not scheduled</div>'+pill()+'</div>';
     }else{
-      html+='<div class="person"><div class="none">No duty<div class="nnote">'+esc(r.note)+'</div></div>'+PILL+'</div>';
+      html+='<div class="person"><div class="none">No duty<div class="nnote">'+esc(r.note)+'</div></div>'+pill()+'</div>';
     }
     html+='</div></section>';
   });
@@ -265,10 +267,10 @@ function loadAll(){
 }
 /* Start the staggered fade-in as soon as data is rendered. Photos fade in on their own load. */
 var booted=false;
+function setTx(){var hr=$('hr');if(hr)hr.style.setProperty('--tx',Math.max(0,hr.offsetWidth-22)+'px')}
 function boot(){
   if(booted)return;booted=true;
-  var hr=$("hr");
-  if(hr)hr.style.setProperty('--tx',Math.max(0,hr.offsetWidth-22)+'px');
+  setTx();
   requestAnimationFrame(function(){requestAnimationFrame(function(){document.body.classList.add('go')})});
 }
 setTimeout(function(){document.body.classList.add('go')},6000); /* safety: never leave the page hidden */
@@ -383,7 +385,33 @@ try{localStorage.removeItem('wod_wk')}catch(e){}
 loadAll();
 setInterval(render,60000);
 setInterval(function(){if(S)loadLive().then(render)},180000);
-document.addEventListener('visibilitychange',function(){if(!document.hidden&&S&&Date.now()-lastLive>30000)loadLive().then(render)});
+
+/* ---------- coming back to the app: behave like a fresh launch ---------- */
+var lastFull=Date.now(),lastDuty=dutyDate(),refreshing=false,RESUME_GAP=120000;
+function fullRefresh(){
+  if(refreshing)return;refreshing=true;
+  var b=document.body,ended=false;
+  function fin(){if(ended)return;ended=true;setTx();requestAnimationFrame(function(){requestAnimationFrame(function(){b.classList.add('go');refreshing=false})})}
+  /* snap everything back to the hidden start state (no fade-out), so the entrance animation plays again */
+  b.classList.add('rs');b.classList.remove('go');void b.offsetWidth;b.classList.remove('rs');
+  LOADED=stamp();lastFull=Date.now();lastDuty=dutyDate();
+  if(window.wodDate)window.wodDate();
+  setTimeout(fin,8000); /* safety: never leave the page hidden */
+  Promise.all([getJSON('data/schedule.json'),getJSON('data/overrides.json').catch(function(){return{items:[]}}),getJSON('data/config.json').catch(function(){return null})]).then(function(a){
+    S=a[0];FILE=a[1].items||[];CFG=a[2]||CFG;
+    var p=loadLive();
+    return Promise.race([p,new Promise(function(r){setTimeout(r,1500)})]).then(function(){p.then(function(){render()})});
+  }).catch(function(){}).then(function(){render();fin()});
+}
+function onResume(){
+  if(!booted||!S||document.hidden)return;
+  var gap=Date.now()-lastFull,ov=$('ov').className.indexOf('on')>=0;
+  if(!ov&&(gap>RESUME_GAP||dutyDate()!==lastDuty)){fullRefresh();return}
+  if(Date.now()-lastLive>30000)loadLive().then(render);
+}
+document.addEventListener('visibilitychange',onResume);
+window.addEventListener('pageshow',function(e){if(e.persisted)onResume()});
+window.addEventListener('focus',onResume);
 })();
 </script>
 <script>
