@@ -36,7 +36,7 @@
  },
  "dorms": {
   "boys": {
-   "label": "Boys' Dorm",
+   "label": "Boys Dorm",
    "phone": "(602) 688-9018",
    "deans": [
     "logan",
@@ -45,7 +45,7 @@
    "gap": "No dean is scheduled for this day."
   },
   "girls": {
-   "label": "Girls' Dorm",
+   "label": "Girls Dorm",
    "phone": "(602) 345-0246",
    "deans": [
     "grecia",
